@@ -7,6 +7,7 @@ package GUI;
 import documentData.AQL_Inspector;
 import documentData.criteriosInspeccion;
 import documentData.dataDocumento;
+import documentData.resultadosInspeccion;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -29,16 +32,21 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
     private dataDocumento documento;
     private AQL_Inspector inspector; // Mantener una referencia al inspector
     private criteriosInspeccion criteriosInspeccion;
+    private resultadosInspeccion resultadosInspeccion;
+    private JTextField[] fields;
 
-    public criteriosInspeccionForm(dataDocumento documento, criteriosInspeccion criteriosInspeccion) {
+    public criteriosInspeccionForm(dataDocumento documento, criteriosInspeccion criteriosInspeccion, resultadosInspeccion resultadosInspeccion) {
         initComponents();
         centerWindowOnScreen();
 
+        btnVaciarCampos.setVisible(false);
+
         this.documento = documento;
         this.criteriosInspeccion = criteriosInspeccion;
+        this.resultadosInspeccion = resultadosInspeccion;
         this.cantidadUnidadesLote = documento.getCantidadUnidades();
         tipoDocumento = documento.getTipoDocumento();
-        
+
         // Deshabilitar edición de campos
         txtCantidadAMuestrear.setEditable(false);
         txtCantidadAceptacion.setEditable(false);
@@ -49,12 +57,17 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
         // Inicializar inspector
         inspector = new AQL_Inspector(cantidadUnidadesLote);
 
-       
+        // Inicializa el array de JTextField
+        fields = new JTextField[]{
+            txtCantidadAMuestrear, txtCantidadAceptacion, txtCantidadRechazo, txtCantidadUnidadesLote,
+             txtNivelInspección
+        };
+
+        agregarListenersATextFields(fields);
 
         // Calcular criterios de inspección
         calcularCriteriosInspeccion();
     }
-
 
     public criteriosInspeccionForm() {
     }
@@ -93,7 +106,7 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
         cmbPorcenajeInspeccion.addActionListener(e -> actualizarValoresPorcentaje());
     }
 
-     private void actualizarValoresPorcentaje() {
+    private void actualizarValoresPorcentaje() {
         // Obtener el porcentaje seleccionado
         String selectedItem = (String) cmbPorcenajeInspeccion.getSelectedItem();
         if (selectedItem != null) {
@@ -127,6 +140,47 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "No hay porcentajes disponibles para la letra " + inspector.getCodigoInspeccion());
         }
+    }
+
+    // Método para añadir listeners a los campos de texto
+    private void agregarListenersATextFields(JTextField[] fields) {
+        for (JTextField field : fields) {
+            field.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+            });
+        }
+    }
+
+// Método para actualizar el estado de los botones
+    private void actualizarBotones() {
+        boolean hayTexto = false;
+        boolean todosLlenos = true;
+
+        // Verificar cada campo de texto
+        for (JTextField field : fields) {
+            if (field.getText().isEmpty()) {
+                todosLlenos = false; // Si algún campo está vacío
+            } else {
+                hayTexto = true; // Si al menos un campo tiene texto
+            }
+        }
+
+        // Habilitar o deshabilitar los botones según el estado de los campos
+        btnVaciarCampos.setEnabled(hayTexto);
+        btnSiguiente.setEnabled(todosLlenos);
     }
 
     //Method to force centering the form
@@ -200,6 +254,7 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
         btnSiguiente.setText("Siguiente");
         btnSiguiente.setBorder(null);
         btnSiguiente.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnSiguiente.setEnabled(false);
         btnSiguiente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSiguienteActionPerformed(evt);
@@ -212,6 +267,7 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
         btnVaciarCampos.setForeground(new java.awt.Color(43, 43, 43));
         btnVaciarCampos.setText("Vaciar Campos");
         btnVaciarCampos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnVaciarCampos.setEnabled(false);
         jPanel1.add(btnVaciarCampos, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 590, 220, 60));
 
         jLabel3.setFont(new java.awt.Font("Open Sans", 0, 50)); // NOI18N
@@ -368,16 +424,17 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSiguienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSiguienteActionPerformed
-        
-        
+
+        if (resultadosInspeccion == null) {
+            resultadosInspeccion = new resultadosInspeccion(); // Crear nueva instancia si es null
+        }
+
         criteriosInspeccion = new criteriosInspeccion(nivelInspeccion, cantidadUnidadesAMuestrear, cantidadRechazo, cantidadAceptación);
-        
-        cantidadErroresForm cantidadErroresForm = new cantidadErroresForm(documento, criteriosInspeccion);
+
+        cantidadErroresForm cantidadErroresForm = new cantidadErroresForm(documento, criteriosInspeccion, resultadosInspeccion);
         this.dispose();
         cantidadErroresForm.setVisible(true);
-        
-        
-        
+
 
     }//GEN-LAST:event_btnSiguienteActionPerformed
 

@@ -24,7 +24,12 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
     private dataDocumento documento;
     private criteriosInspeccion criteriosInspeccion;
     private resultadosInspeccion resultadosInspeccion;
-    private String resultadoInspeccion;
+    private String resultadoInspeccion, observacionesFinales;
+    private int cantidadErrores;
+    private Double porcentajeDefectos;
+    
+    
+    
 
     public resultadoDocumentoForm(dataDocumento documento, criteriosInspeccion criteriosInspeccion, resultadosInspeccion resultadosInspeccion) {
         initComponents();
@@ -33,6 +38,10 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
         this.documento = documento;
         this.criteriosInspeccion = criteriosInspeccion;
         this.resultadosInspeccion = resultadosInspeccion;
+        
+        cantidadErrores = resultadosInspeccion.getNumeroDefectos();
+        porcentajeDefectos = resultadosInspeccion.getPorcentajeDefectos();
+        
 
         resultadoInspeccion = resultadosInspeccion.getResultadoFinal();
         lblResultado.setText(resultadoInspeccion);
@@ -76,8 +85,11 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
         lblResultado = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         lblEstadoDocumento1 = new javax.swing.JLabel();
-        btnSiguiente = new javax.swing.JButton();
+        btnGenerarDocumento = new javax.swing.JButton();
         btnVolver = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtAreaObservaciones = new javax.swing.JTextArea();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -93,32 +105,32 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
         lblResultado.setFont(new java.awt.Font("Open Sans", 0, 50)); // NOI18N
         lblResultado.setForeground(new java.awt.Color(217, 217, 217));
         lblResultado.setText("Resultado");
-        jPanel1.add(lblResultado, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 210, 380, -1));
+        jPanel1.add(lblResultado, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 130, 380, -1));
 
-        jLabel4.setFont(new java.awt.Font("Open Sans", 0, 50)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Open Sans", 0, 22)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(217, 217, 217));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Resultado del Documento");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 50, -1, -1));
+        jLabel4.setText("Observaciones Finales");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 250, -1, -1));
 
         lblEstadoDocumento1.setFont(new java.awt.Font("Open Sans", 0, 50)); // NOI18N
         lblEstadoDocumento1.setForeground(new java.awt.Color(217, 217, 217));
         lblEstadoDocumento1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblEstadoDocumento1.setText("Estado:");
-        jPanel1.add(lblEstadoDocumento1, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 210, 230, -1));
+        jPanel1.add(lblEstadoDocumento1, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 130, 230, -1));
 
-        btnSiguiente.setBackground(new java.awt.Color(93, 186, 71));
-        btnSiguiente.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
-        btnSiguiente.setForeground(new java.awt.Color(43, 43, 43));
-        btnSiguiente.setText("Generar Documento");
-        btnSiguiente.setBorder(null);
-        btnSiguiente.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnSiguiente.addActionListener(new java.awt.event.ActionListener() {
+        btnGenerarDocumento.setBackground(new java.awt.Color(93, 186, 71));
+        btnGenerarDocumento.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
+        btnGenerarDocumento.setForeground(new java.awt.Color(43, 43, 43));
+        btnGenerarDocumento.setText("Generar Documento");
+        btnGenerarDocumento.setBorder(null);
+        btnGenerarDocumento.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnGenerarDocumento.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSiguienteActionPerformed(evt);
+                btnGenerarDocumentoActionPerformed(evt);
             }
         });
-        jPanel1.add(btnSiguiente, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 350, 580, 60));
+        jPanel1.add(btnGenerarDocumento, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 550, 230, 60));
 
         btnVolver.setBackground(new java.awt.Color(255, 0, 0));
         btnVolver.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
@@ -130,7 +142,19 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
                 btnVolverActionPerformed(evt);
             }
         });
-        jPanel1.add(btnVolver, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 430, 580, 60));
+        jPanel1.add(btnVolver, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 550, 230, 60));
+
+        txtAreaObservaciones.setColumns(20);
+        txtAreaObservaciones.setRows(5);
+        jScrollPane1.setViewportView(txtAreaObservaciones);
+
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 290, 590, 190));
+
+        jLabel5.setFont(new java.awt.Font("Open Sans", 0, 50)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(217, 217, 217));
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("Resultado del Documento");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 50, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -146,12 +170,45 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnSiguienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSiguienteActionPerformed
+    private void btnGenerarDocumentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarDocumentoActionPerformed
         
-    }//GEN-LAST:event_btnSiguienteActionPerformed
+        observacionesFinales = txtAreaObservaciones.getText();
+        
+        resultadosInspeccion = new resultadosInspeccion(cantidadErrores, porcentajeDefectos, resultadoInspeccion, observacionesFinales);
+        
+        System.out.println("Nombre de Producto: " + documento.getNombreProducto());
+        System.out.println("Marca: " + documento.getMarca());
+        System.out.println("Cliente: " + documento.getCliente());
+        System.out.println("Fecha Evaluacion: " + documento.getFechaEvaluacion());
+        System.out.println("P/N IDS: " + documento.getPnIds());
+        System.out.println("Numero de Lote: " + documento.getNumeroLote());
+        System.out.println("Proveedor: " + documento.getProveedor());
+        System.out.println("Referencia Cliente: " + documento.getReferenciaCliente());
+        System.out.println("Factura: " + documento.getFactura());
+        System.out.println("Cantidad de Unidades: " + documento.getCantidadUnidades());
+        System.out.println("Tipo de Documento: " + documento.getTipoDocumento());
+        System.out.println("_____________________________\n");
+        
+        System.out.println("Nivel de Inspección: " + criteriosInspeccion.getNivelInspeccion());
+        System.out.println("Tamaño de la Muestra: " + criteriosInspeccion.getTamanoMuestra());
+        System.out.println("Cantidad de Aceptación: " + criteriosInspeccion.getCantidadAceptacion());
+        System.out.println("Cantidad de Rechazo: " + criteriosInspeccion.getCantidadRechazo());
+        System.out.println("_____________________________\n");
+        
+        System.out.println("Numero de Defectos: " + resultadosInspeccion.getNumeroDefectos());
+        System.out.println("Porcentaje de Defectos: " + resultadosInspeccion.getPorcentajeDefectos());
+        System.out.println("Resultado Final: " + resultadosInspeccion.getResultadoFinal());
+        System.out.println("Observaciones Finales: " + resultadosInspeccion.getObservaciones());
+        System.out.println("_____________________________\n");
+        
+        
+        
+    }//GEN-LAST:event_btnGenerarDocumentoActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-
+        cantidadErroresForm cantidadErroresForm = new cantidadErroresForm(documento, criteriosInspeccion, resultadosInspeccion);
+        this.dispose();
+        cantidadErroresForm.setVisible(true);
     }//GEN-LAST:event_btnVolverActionPerformed
 
     /**
@@ -198,12 +255,15 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnSiguiente;
+    private javax.swing.JButton btnGenerarDocumento;
     private javax.swing.JButton btnVolver;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblEstadoDocumento1;
     private javax.swing.JLabel lblResultado;
     private javax.swing.JLabel logo;
+    private javax.swing.JTextArea txtAreaObservaciones;
     // End of variables declaration//GEN-END:variables
 }

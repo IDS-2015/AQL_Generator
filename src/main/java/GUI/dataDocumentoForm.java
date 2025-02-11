@@ -6,6 +6,7 @@ package GUI;
 
 import documentData.criteriosInspeccion;
 import documentData.dataDocumento;
+import documentData.resultadosInspeccion;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -27,12 +30,15 @@ public class dataDocumentoForm extends javax.swing.JFrame {
     private String nombreProducto, cliente, proveedor, marca, fechaEvaluacion, pnIds, factura, referenciaCliente, numeroLote, tipoDocumento;
     private int cantidadUnidades;
     private criteriosInspeccion criteriosInspeccion;
+    private resultadosInspeccion resultadosInspeccion;
+    private JTextField[] fields;
 
     public dataDocumentoForm(String tipoDocumento, dataDocumento documento) {
         initComponents();
         centerWindowOnScreen();
 
         this.tipoDocumento = tipoDocumento;
+
         lblTipoDoc.setText(lblTipoDoc.getText() + " " + tipoDocumento);
 
         txtCantidadUnidades.addKeyListener(new KeyAdapter() {
@@ -55,11 +61,14 @@ public class dataDocumentoForm extends javax.swing.JFrame {
 
         }
 
-        // Array con los JTextField
-        JTextField[] fields = {
+        // Inicializa el array de JTextField
+        fields = new JTextField[]{
             txtNombreProducto, txtProveedorOCLiente, txtMarca, txtFechaEvaluacion,
             txtPNIDS, txtFacturaORefCliente, txtNumeroLote, txtCantidadUnidades
         };
+
+        // Agregar listeners a los campos de texto
+        agregarListenersATextFields(fields);
 
         if (documento != null) {
 
@@ -112,7 +121,6 @@ public class dataDocumentoForm extends javax.swing.JFrame {
             System.out.println("Tipo de Documento: " + tipoDocumento);
             System.out.println("_____________________________\n");
 
-            
         } else {
             documento = new dataDocumento();
             documento.setTipoDocumento(tipoDocumento);
@@ -121,6 +129,47 @@ public class dataDocumentoForm extends javax.swing.JFrame {
     }
 
     public dataDocumentoForm() {
+    }
+
+    // Método para añadir listeners a los campos de texto
+    private void agregarListenersATextFields(JTextField[] fields) {
+        for (JTextField field : fields) {
+            field.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+            });
+        }
+    }
+
+// Método para actualizar el estado de los botones
+    private void actualizarBotones() {
+        boolean hayTexto = false;
+        boolean todosLlenos = true;
+
+        // Verificar cada campo de texto
+        for (JTextField field : fields) {
+            if (field.getText().isEmpty()) {
+                todosLlenos = false; // Si algún campo está vacío
+            } else {
+                hayTexto = true; // Si al menos un campo tiene texto
+            }
+        }
+
+        // Habilitar o deshabilitar los botones según el estado de los campos
+        btnVaciarCampos1.setEnabled(hayTexto);
+        btnSiguiente.setEnabled(todosLlenos);
     }
 
     //Method to force centering the form
@@ -186,6 +235,11 @@ public class dataDocumentoForm extends javax.swing.JFrame {
         btnVolver.setForeground(new java.awt.Color(217, 217, 217));
         btnVolver.setText("Volver");
         btnVolver.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnVolver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVolverActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnVolver, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 590, 150, 60));
 
         btnSiguiente.setBackground(new java.awt.Color(93, 186, 71));
@@ -194,6 +248,7 @@ public class dataDocumentoForm extends javax.swing.JFrame {
         btnSiguiente.setText("Siguiente");
         btnSiguiente.setBorder(null);
         btnSiguiente.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnSiguiente.setEnabled(false);
         btnSiguiente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSiguienteActionPerformed(evt);
@@ -206,6 +261,7 @@ public class dataDocumentoForm extends javax.swing.JFrame {
         btnVaciarCampos1.setForeground(new java.awt.Color(43, 43, 43));
         btnVaciarCampos1.setText("Vaciar Campos");
         btnVaciarCampos1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnVaciarCampos1.setEnabled(false);
         jPanel1.add(btnVaciarCampos1, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 590, 220, 60));
 
         lblTipoDoc.setFont(new java.awt.Font("Open Sans", 0, 30)); // NOI18N
@@ -473,19 +529,19 @@ public class dataDocumentoForm extends javax.swing.JFrame {
                 fechaEvaluacion, pnIds, referenciaCliente,
                 factura, numeroLote, tipoDocumento, cantidadUnidades);
 
-        // Suponiendo que criteriosInspeccion es una variable de tipo criteriosInspección
+        // Suponiendo que criteriosInspeccion es una variable de tipo CriteriosInspeccion
         if (criteriosInspeccion == null) {
-            // Si criteriosInspeccion es null, crear una nueva instancia
-            criteriosInspeccion = new criteriosInspeccion();
-            criteriosInspeccionForm criteriosInspecciónForm = new criteriosInspeccionForm(documento, criteriosInspeccion);
-            this.dispose();
-            criteriosInspecciónForm.setVisible(true);
-        } else {
-            // Si criteriosInspeccion no es null, pasar la instancia existente
-            criteriosInspeccionForm criteriosInspecciónForm = new criteriosInspeccionForm(documento, criteriosInspeccion);
-            this.dispose();
-            criteriosInspecciónForm.setVisible(true);
+            criteriosInspeccion = new criteriosInspeccion(); // Crear nueva instancia si es null
         }
+
+        if (resultadosInspeccion == null) {
+            resultadosInspeccion = new resultadosInspeccion(); // Crear nueva instancia si es null
+        }
+
+// Ahora, ambos objetos están garantizados de no ser nulos
+        criteriosInspeccionForm criteriosInspeccionForm = new criteriosInspeccionForm(documento, criteriosInspeccion, resultadosInspeccion);
+        this.dispose();
+        criteriosInspeccionForm.setVisible(true);
 
     }//GEN-LAST:event_btnSiguienteActionPerformed
 
@@ -584,6 +640,10 @@ public class dataDocumentoForm extends javax.swing.JFrame {
     private void txtFechaEvaluacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaEvaluacionActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtFechaEvaluacionActionPerformed
+
+    private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
+        
+    }//GEN-LAST:event_btnVolverActionPerformed
 
     /**
      * @param args the command line arguments

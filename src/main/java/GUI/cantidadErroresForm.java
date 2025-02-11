@@ -11,6 +11,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -26,34 +27,38 @@ public class cantidadErroresForm extends javax.swing.JFrame {
      */
     private dataDocumento documento;
     private criteriosInspeccion criteriosInspeccion;
+    private resultadosInspeccion resultadosInspeccion;
     private double porcentajeErrores;
     private int cantidadErrores, cantidadUnidadesLote, cantidadRechazo;
     private String resultadoDocumento;
-
-    public cantidadErroresForm(dataDocumento documento, criteriosInspeccion criteriosInspeccion) {
+    private JTextField[] fields;
+    
+    public cantidadErroresForm(dataDocumento documento, criteriosInspeccion criteriosInspeccion, resultadosInspeccion resultadosInspeccion) {
         initComponents();
         centerWindowOnScreen();
-
+        
         this.documento = documento;
         this.criteriosInspeccion = criteriosInspeccion;
+        this.resultadosInspeccion = resultadosInspeccion;
         
         cantidadRechazo = criteriosInspeccion.getCantidadRechazo();
-
+        
         cantidadUnidadesLote = documento.getCantidadUnidades();
         txtCantidadUnidadesLote.setText(String.valueOf(cantidadUnidadesLote));
         txtCantidadUnidadesLote.setEditable(false);
-
+        
+        
         txtCantidadErrores.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 actualizarPorcentajeErrores();
             }
-
+            
             @Override
             public void removeUpdate(DocumentEvent e) {
                 actualizarPorcentajeErrores();
             }
-
+            
             @Override
             public void changedUpdate(DocumentEvent e) {
                 actualizarPorcentajeErrores();
@@ -72,9 +77,57 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         
         txtPorcentajeErrores.setEditable(false);
 
+        // Inicializa el array de JTextField
+        fields = new JTextField[]{
+            txtCantidadErrores
+        };
+        
+        agregarListenersATextFields(fields);
+        
+    }
+    
+    public cantidadErroresForm() {
     }
 
-    public cantidadErroresForm() {
+    // Método para añadir listeners a los campos de texto
+    private void agregarListenersATextFields(JTextField[] fields) {
+        for (JTextField field : fields) {
+            field.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+                
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+                
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+            });
+        }
+    }
+
+// Método para actualizar el estado de los botones
+    private void actualizarBotones() {
+        boolean hayTexto = false;
+        boolean todosLlenos = true;
+
+        // Verificar cada campo de texto
+        for (JTextField field : fields) {
+            if (field.getText().isEmpty()) {
+                todosLlenos = false; // Si algún campo está vacío
+            } else {
+                hayTexto = true; // Si al menos un campo tiene texto
+            }
+        }
+
+        // Habilitar o deshabilitar los botones según el estado de los campos
+        btnVaciarCampos.setEnabled(hayTexto);
+        btnSiguiente.setEnabled(todosLlenos);
     }
 
     //Method to force centering the form
@@ -87,7 +140,7 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         int centerY = (int) (screenRect.getHeight() - windowHeight) / 2;
         setLocation(centerX, centerY);
     }
-
+    
     private void calcularPorcentajeError(int cantidadErrores, int cantidadUnidadesLote) {
         if (cantidadUnidadesLote > 0) { // Verificar que no se divida por cero
             porcentajeErrores = ((double) cantidadErrores / cantidadUnidadesLote) * 100;
@@ -96,7 +149,7 @@ public class cantidadErroresForm extends javax.swing.JFrame {
             System.out.println("La cantidad de unidades no puede ser cero o negativa.");
         }
     }
-
+    
     private void actualizarPorcentajeErrores() {
         try {
             cantidadErrores = Integer.parseInt(txtCantidadErrores.getText());
@@ -111,16 +164,14 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         }
     }
     
-    private String calcularResultadoDocumento(){
+    private String calcularResultadoDocumento() {
         
-        
-        
-        if(cantidadErrores < cantidadRechazo){
+        if (cantidadErrores < cantidadRechazo) {
             return resultadoDocumento = "Aprobado";
-        }
-        else{
+        } else {
             return resultadoDocumento = "Rechazado";
         }
+        
         
         
     }
@@ -181,13 +232,13 @@ public class cantidadErroresForm extends javax.swing.JFrame {
                 txtCantidadErroresActionPerformed(evt);
             }
         });
-        jPanel1.add(txtCantidadErrores, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 320, 640, 50));
+        jPanel1.add(txtCantidadErrores, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 320, 680, 50));
 
         jLabel3.setFont(new java.awt.Font("Open Sans", 0, 50)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(217, 217, 217));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Cantidad de Errores");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 50, -1, -1));
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 50, -1, -1));
 
         txtPorcentajeErrores.setBackground(new java.awt.Color(102, 102, 102));
         txtPorcentajeErrores.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
@@ -208,7 +259,7 @@ public class cantidadErroresForm extends javax.swing.JFrame {
                 txtPorcentajeErroresActionPerformed(evt);
             }
         });
-        jPanel1.add(txtPorcentajeErrores, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 430, 640, 50));
+        jPanel1.add(txtPorcentajeErrores, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 430, 680, 50));
 
         lblPorcentajeErrores.setFont(new java.awt.Font("Open Sans", 0, 22)); // NOI18N
         lblPorcentajeErrores.setForeground(new java.awt.Color(217, 217, 217));
@@ -232,6 +283,12 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         btnVaciarCampos.setForeground(new java.awt.Color(43, 43, 43));
         btnVaciarCampos.setText("Vaciar Campos");
         btnVaciarCampos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnVaciarCampos.setEnabled(false);
+        btnVaciarCampos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVaciarCamposActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnVaciarCampos, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 590, 220, 60));
 
         btnSiguiente.setBackground(new java.awt.Color(93, 186, 71));
@@ -240,6 +297,7 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         btnSiguiente.setText("Siguiente");
         btnSiguiente.setBorder(null);
         btnSiguiente.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnSiguiente.setEnabled(false);
         btnSiguiente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSiguienteActionPerformed(evt);
@@ -270,7 +328,7 @@ public class cantidadErroresForm extends javax.swing.JFrame {
                 txtCantidadUnidadesLoteActionPerformed(evt);
             }
         });
-        jPanel1.add(txtCantidadUnidadesLote, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 220, 640, 50));
+        jPanel1.add(txtCantidadUnidadesLote, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 220, 680, 50));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -311,14 +369,16 @@ public class cantidadErroresForm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPorcentajeErroresActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-
+        
+        criteriosInspeccionForm criteriosInspeccionForm = new criteriosInspeccionForm(documento, criteriosInspeccion, resultadosInspeccion);
+        this.dispose();
+        criteriosInspeccionForm.setVisible(true);
 
     }//GEN-LAST:event_btnVolverActionPerformed
 
     private void btnSiguienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSiguienteActionPerformed
         calcularResultadoDocumento();
-        resultadosInspeccion resultadosInspeccion = new resultadosInspeccion(cantidadErrores, porcentajeErrores, resultadoDocumento, null);
-        
+        resultadosInspeccion = new resultadosInspeccion(cantidadErrores, porcentajeErrores, resultadoDocumento, null);
         
         resultadoDocumentoForm resultadoDocumentoForm = new resultadoDocumentoForm(documento, criteriosInspeccion, resultadosInspeccion);
         this.dispose();
@@ -338,6 +398,10 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCantidadUnidadesLoteActionPerformed
 
+    private void btnVaciarCamposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVaciarCamposActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnVaciarCamposActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -351,15 +415,15 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(cantidadErroresForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
+            
         } catch (InstantiationException ex) {
             java.util.logging.Logger.getLogger(cantidadErroresForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
+            
         } catch (IllegalAccessException ex) {
             java.util.logging.Logger.getLogger(cantidadErroresForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
+            
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(cantidadErroresForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);

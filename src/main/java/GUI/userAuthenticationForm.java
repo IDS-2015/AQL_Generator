@@ -11,7 +11,10 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -25,6 +28,8 @@ public class userAuthenticationForm extends javax.swing.JFrame {
     private String username;
     private String password;
     userEntity authenticatedUser = new userEntity();
+    
+    private JTextField[] fields;
 
     userController UserController = new userController();
 
@@ -33,11 +38,57 @@ public class userAuthenticationForm extends javax.swing.JFrame {
         initCustomComponents();
         centerWindowOnScreen();
 
+        fields = new JTextField[]{
+            txtPassword, txtUsername
+        };
+        
+        agregarListenersATextFields(fields);
        
     }
 
     private void initCustomComponents() {
 
+    }
+    
+    // Método para añadir listeners a los campos de texto
+    private void agregarListenersATextFields(JTextField[] fields) {
+        for (JTextField field : fields) {
+            field.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    actualizarBotones();
+                }
+            });
+        }
+    }
+
+// Método para actualizar el estado de los botones
+    private void actualizarBotones() {
+        boolean hayTexto = false;
+        boolean todosLlenos = true;
+
+        // Verificar cada campo de texto
+        for (JTextField field : fields) {
+            if (field.getText().isEmpty()) {
+                todosLlenos = false; // Si algún campo está vacío
+            } else {
+                hayTexto = true; // Si al menos un campo tiene texto
+            }
+        }
+
+        // Habilitar o deshabilitar los botones según el estado de los campos
+        btnVaciarCampos.setEnabled(hayTexto);
+        btnIniciarSesion.setEnabled(todosLlenos);
     }
 
     private void authenticateUser() {
@@ -85,6 +136,8 @@ public class userAuthenticationForm extends javax.swing.JFrame {
         txtPassword = new javax.swing.JTextField();
         btnIniciarSesion = new javax.swing.JButton();
         btnVaciarCampos = new javax.swing.JButton();
+        lblCantidadAMuestrear = new javax.swing.JLabel();
+        lblCantidadAMuestrear1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -100,17 +153,16 @@ public class userAuthenticationForm extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Open Sans", 0, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(217, 217, 217));
         jLabel1.setText("Iniciar Sesión");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 180, -1, -1));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 130, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Open Sans", 0, 50)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(217, 217, 217));
         jLabel2.setText("Generador AQL");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 100, -1, -1));
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 50, -1, -1));
 
         txtUsername.setBackground(new java.awt.Color(102, 102, 102));
         txtUsername.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         txtUsername.setForeground(new java.awt.Color(217, 217, 217));
-        txtUsername.setText("Ingrese su usuario");
         txtUsername.setToolTipText("");
         txtUsername.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(217, 217, 217), 2, true));
         txtUsername.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -131,7 +183,6 @@ public class userAuthenticationForm extends javax.swing.JFrame {
         txtPassword.setBackground(new java.awt.Color(102, 102, 102));
         txtPassword.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         txtPassword.setForeground(new java.awt.Color(217, 217, 217));
-        txtPassword.setText("Ingrese su contraseña");
         txtPassword.setToolTipText("");
         txtPassword.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(217, 217, 217), 2, true));
         txtPassword.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -147,7 +198,7 @@ public class userAuthenticationForm extends javax.swing.JFrame {
                 txtPasswordActionPerformed(evt);
             }
         });
-        jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 370, 490, 60));
+        jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 400, 490, 60));
 
         btnIniciarSesion.setBackground(new java.awt.Color(93, 186, 71));
         btnIniciarSesion.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
@@ -155,19 +206,36 @@ public class userAuthenticationForm extends javax.swing.JFrame {
         btnIniciarSesion.setText("Iniciar Sesión");
         btnIniciarSesion.setBorder(null);
         btnIniciarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnIniciarSesion.setEnabled(false);
         btnIniciarSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnIniciarSesionActionPerformed(evt);
             }
         });
-        jPanel1.add(btnIniciarSesion, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 480, 220, 60));
+        jPanel1.add(btnIniciarSesion, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 510, 220, 60));
 
         btnVaciarCampos.setBackground(new java.awt.Color(217, 217, 217));
         btnVaciarCampos.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         btnVaciarCampos.setForeground(new java.awt.Color(43, 43, 43));
         btnVaciarCampos.setText("Vaciar Campos");
         btnVaciarCampos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel1.add(btnVaciarCampos, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 480, 220, 60));
+        btnVaciarCampos.setEnabled(false);
+        btnVaciarCampos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVaciarCamposActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnVaciarCampos, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 510, 220, 60));
+
+        lblCantidadAMuestrear.setFont(new java.awt.Font("Open Sans", 0, 22)); // NOI18N
+        lblCantidadAMuestrear.setForeground(new java.awt.Color(217, 217, 217));
+        lblCantidadAMuestrear.setText("Ingrese su contraseña");
+        jPanel1.add(lblCantidadAMuestrear, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 360, -1, -1));
+
+        lblCantidadAMuestrear1.setFont(new java.awt.Font("Open Sans", 0, 22)); // NOI18N
+        lblCantidadAMuestrear1.setForeground(new java.awt.Color(217, 217, 217));
+        lblCantidadAMuestrear1.setText("Ingrese su usuario");
+        jPanel1.add(lblCantidadAMuestrear1, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 240, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -189,37 +257,18 @@ public class userAuthenticationForm extends javax.swing.JFrame {
 
     private void txtUsernameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtUsernameFocusGained
 
-        if (txtUsername.getText().equals("Ingrese su usuario")) {
-            txtUsername.setText("");
-
-            txtUsername.setForeground(new Color(217,217,217));
-
-        }
     }//GEN-LAST:event_txtUsernameFocusGained
 
     private void txtUsernameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtUsernameFocusLost
-        if (txtUsername.getText().equals("")) {
-            txtUsername.setText("Ingrese su usuario");
-            txtUsername.setForeground(new Color(180,180,180));
-
-        }
+      
     }//GEN-LAST:event_txtUsernameFocusLost
 
     private void txtPasswordFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPasswordFocusGained
-        if (txtPassword.getText().equals("Ingrese su contraseña")) {
-            txtPassword.setText("");
-
-            txtPassword.setForeground(new Color(217,217,217));
-
-        }
+        
     }//GEN-LAST:event_txtPasswordFocusGained
 
     private void txtPasswordFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPasswordFocusLost
-        if (txtPassword.getText().equals("")) {
-            txtPassword.setText("Ingrese su contraseña");
-            txtPassword.setForeground(new Color(180,180,180));
-
-        }
+        
     }//GEN-LAST:event_txtPasswordFocusLost
 
     private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
@@ -230,6 +279,10 @@ public class userAuthenticationForm extends javax.swing.JFrame {
         
        authenticateUser();
     }//GEN-LAST:event_btnIniciarSesionActionPerformed
+
+    private void btnVaciarCamposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVaciarCamposActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnVaciarCamposActionPerformed
 
     /**
      * @param args the command line arguments
@@ -274,6 +327,8 @@ public class userAuthenticationForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lblCantidadAMuestrear;
+    private javax.swing.JLabel lblCantidadAMuestrear1;
     private javax.swing.JLabel logo;
     private javax.swing.JTextField txtPassword;
     private javax.swing.JTextField txtUsername;
