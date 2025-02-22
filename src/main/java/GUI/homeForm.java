@@ -14,7 +14,7 @@ import javax.swing.UIManager;
  *
  * @author marcelovillalobos
  */
-public class documentSelectorForm extends javax.swing.JFrame {
+public class homeForm extends javax.swing.JFrame {
 
     /**
      * Creates new form userAuthentication
@@ -22,20 +22,25 @@ public class documentSelectorForm extends javax.swing.JFrame {
     
     private userEntity user;
     
-    public documentSelectorForm(userEntity user) {
+    public homeForm(userEntity user) {
         
         initComponents();
         centerWindowOnScreen();
         
         this.user = user;
+        btnAdminPanel.setVisible(isAdmin());
         
         lblBienvenido.setText(lblBienvenido.getText() + " " + user.getNameUser());
+        
     }
 
-    public documentSelectorForm() {
+    public homeForm() {
     }
     
-    
+    private boolean isAdmin(){
+        
+        return user.getRoleUser().equalsIgnoreCase("admin");
+    }
     
     //Method to force centering the form
     private void centerWindowOnScreen() {
@@ -123,6 +128,11 @@ public class documentSelectorForm extends javax.swing.JFrame {
         btnAdminPanel.setForeground(new java.awt.Color(43, 43, 43));
         btnAdminPanel.setText("Panel Administrador");
         btnAdminPanel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAdminPanel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAdminPanelActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnAdminPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 80, 220, 50));
 
         btnCerrarSesión.setBackground(new java.awt.Color(255, 0, 0));
@@ -178,6 +188,12 @@ public class documentSelectorForm extends javax.swing.JFrame {
         
     }//GEN-LAST:event_btnDocDespachoActionPerformed
 
+    private void btnAdminPanelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdminPanelActionPerformed
+        adminPanelForm adminPanelForm = new adminPanelForm(user);
+        this.dispose();
+        adminPanelForm.setVisible(true);
+    }//GEN-LAST:event_btnAdminPanelActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -189,21 +205,29 @@ public class documentSelectorForm extends javax.swing.JFrame {
             UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf"); // or FlatDarkLaf for dark theme
 
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(documentSelectorForm.class
+            java.util.logging.Logger.getLogger(homeForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(documentSelectorForm.class
+            java.util.logging.Logger.getLogger(homeForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(documentSelectorForm.class
+            java.util.logging.Logger.getLogger(homeForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(documentSelectorForm.class
+            java.util.logging.Logger.getLogger(homeForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -216,7 +240,7 @@ public class documentSelectorForm extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new documentSelectorForm().setVisible(true);
+                new homeForm().setVisible(true);
             }
         });
     }

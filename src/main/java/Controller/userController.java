@@ -108,4 +108,15 @@ public class userController {
             return null;
         }
     }
+
+    // Get users by status
+    public List<userEntity> getUsersByStatus(String status) {
+        try {
+            return userDao.getUsersByStatus(status);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

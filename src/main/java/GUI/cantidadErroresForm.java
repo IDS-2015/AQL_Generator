@@ -47,6 +47,8 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         txtCantidadUnidadesLote.setText(String.valueOf(cantidadUnidadesLote));
         txtCantidadUnidadesLote.setEditable(false);
         
+        txtCantidadErrores.setText(String.valueOf(resultadosInspeccion.getNumeroDefectos()));
+        
         
         txtCantidadErrores.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -83,6 +85,7 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         };
         
         agregarListenersATextFields(fields);
+        actualizarBotones();
         
     }
     

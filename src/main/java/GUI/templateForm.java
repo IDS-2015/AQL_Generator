@@ -19,6 +19,7 @@ public class templateForm extends javax.swing.JFrame {
      */
     public templateForm() {
         initComponents();
+        centerWindowOnScreen();
     }
     
     //Method to force centering the form

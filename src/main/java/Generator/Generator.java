@@ -37,13 +37,15 @@ public class Generator {
     private List<String> infoGeneralList = new ArrayList<>();
     private List<String> criteriosInspeccionList = new ArrayList<>();
     private List<String> resultadoInspeccionList = new ArrayList<>();
-    
+    private String key;
             
 
     public Generator(criteriosInspeccion criteriosInspeccion, dataDocumento dataDocumento, resultadosInspeccion resultadosInspeccion) {
         this.criteriosInspeccion = criteriosInspeccion;
         this.dataDocumento = dataDocumento;
         this.resultadosInspeccion = resultadosInspeccion;
+        
+        key = dataDocumento.getCliente() + " - " + dataDocumento.getFechaEvaluacion();
     }
 
     public void openFolder(String filePath) {
@@ -58,7 +60,7 @@ public class Generator {
     
    
 
-    public void generateDocument(String key, Map<String, String> placeholders, List<String> specificationsContent) throws Exception {
+    public void generateDocument(Map<String, String> placeholders, List<String> specificationsContent) throws Exception {
         LocalDateTime date1 = LocalDateTime.now();
         DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd, HH;mm;ss");
         String formattedDateTime = date1.format(formatter1);
@@ -67,14 +69,14 @@ public class Generator {
 
         String userHome = System.getProperty("user.home");
         String oneDriveDir = "/Onedrive - Inventory and Distribution Services";
-        String wordDocsPath = userHome + oneDriveDir + "/COC's" + "/Word";
+        String wordDocsPath = userHome + oneDriveDir + "/AQL's" + "/Word";
         Path folderPath = Paths.get(wordDocsPath);
         if (!Files.exists(folderPath)) {
             Files.createDirectories(folderPath);
             System.out.println("Folder created: " + folderPath.toString());
         }
 
-        String pdfFolderPath = userHome + oneDriveDir + "/COC's" + "/PDF";
+        String pdfFolderPath = userHome + oneDriveDir + "/AQL's" + "/PDF";
         Path pdfFolder = Paths.get(pdfFolderPath);
         if (!Files.exists(pdfFolder)) {
             Files.createDirectories(pdfFolder);

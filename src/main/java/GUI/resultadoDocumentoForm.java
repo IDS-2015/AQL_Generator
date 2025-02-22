@@ -4,12 +4,16 @@
  */
 package GUI;
 
+import Controller.collaboratorController;
+import Entities.Collaborator.collaboratorEntity;
 import documentData.criteriosInspeccion;
 import documentData.dataDocumento;
 import documentData.resultadosInspeccion;
 import java.awt.Color;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.util.List;
+import javax.swing.JComboBox;
 import javax.swing.UIManager;
 
 /**
@@ -24,9 +28,10 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
     private dataDocumento documento;
     private criteriosInspeccion criteriosInspeccion;
     private resultadosInspeccion resultadosInspeccion;
-    private String resultadoInspeccion, observacionesFinales;
+    private String resultadoInspeccion, observacionesFinales, elaboradoPor;
     private int cantidadErrores;
     private Double porcentajeDefectos;
+    private collaboratorController collaboratorContoller;
     
     
     
@@ -45,6 +50,9 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
 
         resultadoInspeccion = resultadosInspeccion.getResultadoFinal();
         lblResultado.setText(resultadoInspeccion);
+        
+        collaboratorContoller = new collaboratorController();
+        populateCollaboratorComboBox(cmbPorcenajeInspeccion);
 
         // Cambia el color del JLabel según el resultado
         if ("Aprobado".equalsIgnoreCase(resultadoInspeccion)) {
@@ -70,6 +78,18 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
         int centerY = (int) (screenRect.getHeight() - windowHeight) / 2;
         setLocation(centerX, centerY);
     }
+    
+    // Popular un JComboBox con los colaboradores activos de tipo "collaborator"
+    public void populateCollaboratorComboBox(JComboBox<String> comboBox) {
+        comboBox.removeAllItems(); // Limpiar el combobox
+        comboBox.addItem("Seleccione el colaborador encargado");
+        List<collaboratorEntity> collaborators = collaboratorContoller.getActiveCollaboratorsByType();
+        if (collaborators != null) {
+            for (collaboratorEntity collaborator : collaborators) {
+                comboBox.addItem(collaborator.getNameCollaborator());
+            }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -90,6 +110,8 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtAreaObservaciones = new javax.swing.JTextArea();
         jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        cmbPorcenajeInspeccion = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -110,8 +132,8 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Open Sans", 0, 22)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(217, 217, 217));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Observaciones Finales");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 250, -1, -1));
+        jLabel4.setText("Elaborado por");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 470, -1, -1));
 
         lblEstadoDocumento1.setFont(new java.awt.Font("Open Sans", 0, 50)); // NOI18N
         lblEstadoDocumento1.setForeground(new java.awt.Color(217, 217, 217));
@@ -130,7 +152,7 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
                 btnGenerarDocumentoActionPerformed(evt);
             }
         });
-        jPanel1.add(btnGenerarDocumento, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 550, 230, 60));
+        jPanel1.add(btnGenerarDocumento, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 610, 230, 60));
 
         btnVolver.setBackground(new java.awt.Color(255, 0, 0));
         btnVolver.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
@@ -142,19 +164,28 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
                 btnVolverActionPerformed(evt);
             }
         });
-        jPanel1.add(btnVolver, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 550, 230, 60));
+        jPanel1.add(btnVolver, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 610, 230, 60));
 
         txtAreaObservaciones.setColumns(20);
         txtAreaObservaciones.setRows(5);
         jScrollPane1.setViewportView(txtAreaObservaciones);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 290, 590, 190));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 270, 590, 190));
 
         jLabel5.setFont(new java.awt.Font("Open Sans", 0, 50)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(217, 217, 217));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Resultado del Documento");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 50, -1, -1));
+
+        jLabel6.setFont(new java.awt.Font("Open Sans", 0, 22)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(217, 217, 217));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Observaciones Finales");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 230, -1, -1));
+
+        cmbPorcenajeInspeccion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel1.add(cmbPorcenajeInspeccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 510, 590, 50));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -173,6 +204,7 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
     private void btnGenerarDocumentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarDocumentoActionPerformed
         
         observacionesFinales = txtAreaObservaciones.getText();
+        elaboradoPor = cmbPorcenajeInspeccion.getSelectedItem().toString();
         
         resultadosInspeccion = new resultadosInspeccion(cantidadErrores, porcentajeDefectos, resultadoInspeccion, observacionesFinales);
         
@@ -199,6 +231,8 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
         System.out.println("Porcentaje de Defectos: " + resultadosInspeccion.getPorcentajeDefectos());
         System.out.println("Resultado Final: " + resultadosInspeccion.getResultadoFinal());
         System.out.println("Observaciones Finales: " + resultadosInspeccion.getObservaciones());
+        System.out.println("Elaborado por: " + elaboradoPor);
+        
         System.out.println("_____________________________\n");
         
         
@@ -257,8 +291,10 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGenerarDocumento;
     private javax.swing.JButton btnVolver;
+    private javax.swing.JComboBox<String> cmbPorcenajeInspeccion;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblEstadoDocumento1;

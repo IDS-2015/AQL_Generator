@@ -132,7 +132,7 @@ public class userDAO {
     }
 
     // Method to GET users by status
-    private List<userEntity> getUsersByStatus(String status) throws SQLException {
+    public List<userEntity> getUsersByStatus(String status) throws SQLException {
         List<userEntity> users = new ArrayList<>();
         String sql = "SELECT * FROM user WHERE status = ?";
 
@@ -191,5 +191,7 @@ public class userDAO {
     public List<userEntity> getInactiveUsers() throws SQLException {
         return getUsersByStatus("Inactive");
     }
+    
+    
 
 }

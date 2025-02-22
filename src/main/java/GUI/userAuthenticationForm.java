@@ -100,7 +100,7 @@ public class userAuthenticationForm extends javax.swing.JFrame {
 
         if (authenticatedUser != null) {
             JOptionPane.showMessageDialog(this, "¡Inicio de sesión existoso! \n\n Bienvenido/a: " + authenticatedUser.getNameUser());
-            documentSelectorForm documentSelectorForm = new documentSelectorForm(authenticatedUser);
+            homeForm documentSelectorForm = new homeForm(authenticatedUser);
             this.dispose();
             documentSelectorForm.setVisible(true);
         } else {
