@@ -129,7 +129,7 @@ public class adminPanelForm extends javax.swing.JFrame {
 
         
        
-        adminCollaboratorsForm adminCollaboratorsForm = new adminCollaboratorsForm();
+        adminCollaboratorsForm adminCollaboratorsForm = new adminCollaboratorsForm(user);
         this.dispose();
         adminCollaboratorsForm.setVisible(true);
 

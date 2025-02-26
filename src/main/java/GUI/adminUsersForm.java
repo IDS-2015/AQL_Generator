@@ -181,7 +181,7 @@ public class adminUsersForm extends javax.swing.JFrame implements usersEventsLis
                 if (selectedStatus != null) {
                     filterTableByStatus();
                 } else {
-                    populateTable(); // Populate the table with all clients and products if no status is selected
+                    populateTable(); // Populate the table with all users and products if no status is selected
                 }
             }
         });
@@ -213,8 +213,8 @@ public class adminUsersForm extends javax.swing.JFrame implements usersEventsLis
         }
 
         MyTableModel tableModel = (MyTableModel) usersTable.getModel();
-        System.out.println("Number of filtered clients: " + filteredUsers.size()); // Debug line
-        tableModel.setUsers(filteredUsers); // Update the table model with filtered clients
+        System.out.println("Number of filtered users: " + filteredUsers.size()); // Debug line
+        tableModel.setUsers(filteredUsers); // Update the table model with filtered users
     }
 
     //Defining the table model
@@ -235,15 +235,15 @@ public class adminUsersForm extends javax.swing.JFrame implements usersEventsLis
         //Refresh data
         public void refreshData() {
             userController controller = new userController();
-            List<userEntity> allUsers = controller.getActiveUsers(); // Fetch all active clients
-            this.users = allUsers; // Update the list of clients
+            List<userEntity> allUsers = controller.getActiveUsers(); // Fetch all active users
+            this.users = allUsers; // Update the list of users
             fireTableDataChanged(); // Notify the table model that data has changed
             CmbBoxEstado.setSelectedItem("Active");
             btnCambiarEstado.setEnabled(false);
 
         }
 
-        //Set the clients
+        //Set the users
         public void setUsers(List<userEntity> users) {
             this.users = users;
             fireTableDataChanged(); // Notify the table model that data has changed
@@ -424,7 +424,7 @@ public class adminUsersForm extends javax.swing.JFrame implements usersEventsLis
         btnAgregar.setBackground(new java.awt.Color(93, 186, 71));
         btnAgregar.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         btnAgregar.setForeground(new java.awt.Color(43, 43, 43));
-        btnAgregar.setText("Agregar Usuario");
+        btnAgregar.setText("Agregar");
         btnAgregar.setBorder(null);
         btnAgregar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
@@ -437,9 +437,14 @@ public class adminUsersForm extends javax.swing.JFrame implements usersEventsLis
         btnModificar.setBackground(new java.awt.Color(217, 217, 217));
         btnModificar.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         btnModificar.setForeground(new java.awt.Color(43, 43, 43));
-        btnModificar.setText("Modificar Usuario");
+        btnModificar.setText("Modificar");
         btnModificar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnModificar.setEnabled(false);
+        btnModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModificarActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnModificar, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 590, 190, 60));
 
         btnVolver.setBackground(new java.awt.Color(255, 0, 0));
@@ -489,7 +494,8 @@ public class adminUsersForm extends javax.swing.JFrame implements usersEventsLis
     }//GEN-LAST:event_btnRefrescarTabla1ActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-
+           agregarUsuarioForm agregarUsuarioForm = new agregarUsuarioForm(this);
+           agregarUsuarioForm.setVisible(true);
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
@@ -545,6 +551,15 @@ public class adminUsersForm extends javax.swing.JFrame implements usersEventsLis
         }
 
     }//GEN-LAST:event_btnCambiarEstadoActionPerformed
+
+    private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
+        int selectedRow = usersTable.getSelectedRow();
+        userEntity selectedUser = getUserFromTable(selectedRow);
+        
+        modificarUsuarioForm modificarForm = new modificarUsuarioForm(this,selectedUser);
+        modificarForm.setVisible(true);
+        
+    }//GEN-LAST:event_btnModificarActionPerformed
 
     /**
      * @param args the command line arguments

@@ -95,7 +95,7 @@ public class collaboratorController {
             return null;
         }
     }
-    
+
     // Obtener colaboradores activos de tipo "collaborator"
     public List<collaboratorEntity> getActiveCollaboratorsByType() {
         try {
@@ -103,6 +103,16 @@ public class collaboratorController {
                     .stream()
                     .filter(c -> "collaborator".equalsIgnoreCase(c.getTypeCollaborator()))
                     .collect(Collectors.toList());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Get collaborators by status
+    public List<collaboratorEntity> getCollaboratorsByStatus(String status) {
+        try {
+            return collaboratorDao.getCollaboratorsByStatus(status);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

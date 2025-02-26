@@ -66,7 +66,7 @@ public class collaboratorDAO {
         return collaborators;
     }
 
-        // Method to CREATE a collaborator
+    // Method to CREATE a collaborator
     public void createCollaborator(String name_collaborator, String type_collaborator) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -89,7 +89,9 @@ public class collaboratorDAO {
             }
             e.printStackTrace();
         } finally {
-            if (statement != null) statement.close();
+            if (statement != null) {
+                statement.close();
+            }
             if (connection != null) {
                 connection.setAutoCommit(true);
                 connection.close();
@@ -119,7 +121,9 @@ public class collaboratorDAO {
             }
             e.printStackTrace();
         } finally {
-            if (statement != null) statement.close();
+            if (statement != null) {
+                statement.close();
+            }
             if (connection != null) {
                 connection.setAutoCommit(true);
                 connection.close();
@@ -148,7 +152,9 @@ public class collaboratorDAO {
             }
             e.printStackTrace();
         } finally {
-            if (statement != null) statement.close();
+            if (statement != null) {
+                statement.close();
+            }
             if (connection != null) {
                 connection.setAutoCommit(true);
                 connection.close();
@@ -167,7 +173,7 @@ public class collaboratorDAO {
     }
 
     // Method to GET collaborators by status
-    private List<collaboratorEntity> getCollaboratorsByStatus(String status) throws SQLException {
+    public List<collaboratorEntity> getCollaboratorsByStatus(String status) throws SQLException {
         List<collaboratorEntity> collaborators = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
@@ -191,9 +197,15 @@ public class collaboratorDAO {
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         } finally {
-            if (resultSet != null) resultSet.close();
-            if (statement != null) statement.close();
-            if (connection != null) connection.close();
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
         return collaborators;
     }
@@ -207,6 +219,5 @@ public class collaboratorDAO {
     public List<collaboratorEntity> getInactiveCollaborators() throws SQLException {
         return getCollaboratorsByStatus("Inactive");
     }
-
 
 }
