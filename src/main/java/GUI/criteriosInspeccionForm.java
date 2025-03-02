@@ -28,7 +28,7 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
     /**
      * Creates new form userAuthentication
      */
-    private String nivelInspeccion, tipoDocumento;
+    private String nivelInspeccion,AQLDefinido ,tipoDocumento;
     private int cantidadUnidadesLote, cantidadUnidadesAMuestrear, cantidadAceptación, cantidadRechazo;
     private dataDocumento documento;
     private AQL_Inspector inspector; // Mantener una referencia al inspector
@@ -94,6 +94,7 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
 
         nivelInspeccion = inspector.getCodigoInspeccion();
         txtNivelInspección.setText(nivelInspeccion);
+        
 
         // Llenar el ComboBox con los porcentajes permitidos
         populateComboBox(inspector);
@@ -223,7 +224,7 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
         txtNivelInspección = new javax.swing.JTextField();
         lblCantidadAceptación = new javax.swing.JLabel();
         txtCantidadAceptacion = new javax.swing.JTextField();
-        lblPorcentajeInspeccion = new javax.swing.JLabel();
+        lblAQLDefinido = new javax.swing.JLabel();
         cmbPorcenajeInspeccion = new javax.swing.JComboBox<>();
 
         button1.setLabel("button1");
@@ -409,10 +410,10 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
         });
         jPanel1.add(txtCantidadAceptacion, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 420, 400, 50));
 
-        lblPorcentajeInspeccion.setFont(new java.awt.Font("Open Sans", 0, 22)); // NOI18N
-        lblPorcentajeInspeccion.setForeground(new java.awt.Color(217, 217, 217));
-        lblPorcentajeInspeccion.setText("Cantidad de Unidades del Lote");
-        jPanel1.add(lblPorcentajeInspeccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 280, -1, -1));
+        lblAQLDefinido.setFont(new java.awt.Font("Open Sans", 0, 22)); // NOI18N
+        lblAQLDefinido.setForeground(new java.awt.Color(217, 217, 217));
+        lblAQLDefinido.setText("AQL Definido");
+        jPanel1.add(lblAQLDefinido, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 280, -1, -1));
 
         cmbPorcenajeInspeccion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jPanel1.add(cmbPorcenajeInspeccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 320, 400, 50));
@@ -437,7 +438,9 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
             resultadosInspeccion = new resultadosInspeccion(); // Crear nueva instancia si es null
         }
 
-        criteriosInspeccion = new criteriosInspeccion(nivelInspeccion, cantidadUnidadesAMuestrear, cantidadRechazo, cantidadAceptación);
+        AQLDefinido = cmbPorcenajeInspeccion.getSelectedItem().toString();
+        
+        criteriosInspeccion = new criteriosInspeccion(nivelInspeccion, AQLDefinido, cantidadUnidadesAMuestrear, cantidadRechazo, cantidadAceptación);
 
         cantidadErroresForm cantidadErroresForm = new cantidadErroresForm(documento, criteriosInspeccion, resultadosInspeccion, user);
         this.dispose();
@@ -605,12 +608,12 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cmbPorcenajeInspeccion;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lblAQLDefinido;
     private javax.swing.JLabel lblCantidadAMuestrear;
     private javax.swing.JLabel lblCantidadAceptación;
     private javax.swing.JLabel lblCantidadRechazo;
     private javax.swing.JLabel lblCantidadUnidadesLote;
     private javax.swing.JLabel lblNivelInspección;
-    private javax.swing.JLabel lblPorcentajeInspeccion;
     private javax.swing.JLabel logo;
     private javax.swing.JTextField txtCantidadAMuestrear;
     private javax.swing.JTextField txtCantidadAceptacion;

@@ -11,6 +11,7 @@ package documentData;
 public class criteriosInspeccion {
 
     private String nivelInspeccion;
+    private String AQLDefinido;
     private int tamanoMuestra;
 
     private int cantidadRechazo;
@@ -19,12 +20,15 @@ public class criteriosInspeccion {
     public criteriosInspeccion() {
     }
 
-    public criteriosInspeccion(String nivelInspeccion, int tamanoMuestra, int cantidadRechazo, int cantidadAceptacion) {
+    public criteriosInspeccion(String nivelInspeccion, String AQLDefinido, int tamanoMuestra, int cantidadRechazo, int cantidadAceptacion) {
         this.nivelInspeccion = nivelInspeccion;
+        this.AQLDefinido = AQLDefinido;
         this.tamanoMuestra = tamanoMuestra;
         this.cantidadRechazo = cantidadRechazo;
         this.cantidadAceptacion = cantidadAceptacion;
     }
+
+    
 
     public String getNivelInspeccion() {
         return nivelInspeccion;
@@ -56,6 +60,14 @@ public class criteriosInspeccion {
 
     public void setCantidadAceptacion(int cantidadAceptacion) {
         this.cantidadAceptacion = cantidadAceptacion;
+    }
+
+    public String getAQLDefinido() {
+        return AQLDefinido;
+    }
+
+    public void setAQLDefinido(String AQLDefinido) {
+        this.AQLDefinido = AQLDefinido;
     }
 
     

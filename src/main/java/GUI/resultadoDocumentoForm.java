@@ -228,6 +228,7 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
         System.out.println("_____________________________\n");
 
         System.out.println("Nivel de Inspección: " + criteriosInspeccion.getNivelInspeccion());
+        System.out.println("AQL Definido: " + criteriosInspeccion.getAQLDefinido());
         System.out.println("Tamaño de la Muestra: " + criteriosInspeccion.getTamanoMuestra());
         System.out.println("Cantidad de Aceptación: " + criteriosInspeccion.getCantidadAceptacion());
         System.out.println("Cantidad de Rechazo: " + criteriosInspeccion.getCantidadRechazo());

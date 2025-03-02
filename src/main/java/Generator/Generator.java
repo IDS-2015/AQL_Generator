@@ -26,6 +26,7 @@ import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 
 import documentData.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Generator {
 
@@ -33,19 +34,47 @@ public class Generator {
     private criteriosInspeccion criteriosInspeccion;
     private dataDocumento dataDocumento;
     private resultadosInspeccion resultadosInspeccion;
-    
-    private List<String> infoGeneralList = new ArrayList<>();
-    private List<String> criteriosInspeccionList = new ArrayList<>();
-    private List<String> resultadoInspeccionList = new ArrayList<>();
-    private String key;
-            
+    Map<String, String> placeholders = new HashMap<>();
 
-    public Generator(criteriosInspeccion criteriosInspeccion, dataDocumento dataDocumento, resultadosInspeccion resultadosInspeccion) {
+    private String key;
+    private String tipoDocumento; // Variable para determinar el tipo de documento
+
+    public Generator(criteriosInspeccion criteriosInspeccion, dataDocumento dataDocumento, resultadosInspeccion resultadosInspeccion, String tipoDocumento) {
         this.criteriosInspeccion = criteriosInspeccion;
         this.dataDocumento = dataDocumento;
         this.resultadosInspeccion = resultadosInspeccion;
-        
+        this.tipoDocumento = tipoDocumento;
+
         key = dataDocumento.getCliente() + " - " + dataDocumento.getFechaEvaluacion();
+
+        // Inicializar el mapa de placeholders
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("nombre_producto", dataDocumento.getNombreProducto());
+        placeholders.put("marca", dataDocumento.getMarca());
+        placeholders.put("fecha_evaluacion", dataDocumento.getFechaEvaluacion());
+        placeholders.put("pn_ids", dataDocumento.getPnIds());
+        placeholders.put("numero_lote", dataDocumento.getNumeroLote());
+        placeholders.put("cantidad_unidades", String.valueOf(dataDocumento.getCantidadUnidades()));
+        placeholders.put("nivel_inspeccion", criteriosInspeccion.getNivelInspeccion());
+        placeholders.put("tamano_muestra", String.valueOf(criteriosInspeccion.getTamanoMuestra()));
+        placeholders.put("aql_definido", String.valueOf(criteriosInspeccion.getAQLDefinido()));  // Suponiendo que "AQL" es un valor fijo o debe ser calculado/obtenido de alguna manera
+        placeholders.put("numero_rechazo", String.valueOf(criteriosInspeccion.getCantidadRechazo()));
+        placeholders.put("numero_aceptacion", String.valueOf(criteriosInspeccion.getCantidadAceptacion()));
+        placeholders.put("numero_defectos", String.valueOf(resultadosInspeccion.getNumeroDefectos()));
+        placeholders.put("porcentaje_defectos", String.format("%.2f", resultadosInspeccion.getPorcentajeDefectos()));
+        placeholders.put("resultado", resultadosInspeccion.getResultadoFinal());
+        placeholders.put("observaciones", resultadosInspeccion.getObservaciones());
+
+        // Añadir campos específicos según el tipo de documento
+        if ("Despacho".equals(tipoDocumento)) {
+            placeholders.put("cliente", dataDocumento.getCliente());
+            placeholders.put("referencia_cliente", dataDocumento.getReferenciaCliente());
+        } else if ("Recepción".equals(tipoDocumento)) {
+            placeholders.put("proveedor", dataDocumento.getProveedor());
+            placeholders.put("factura", dataDocumento.getFactura());
+        }
+
+        this.placeholders = placeholders; // Asumiendo que `placeholders` es un campo de la clase
     }
 
     public void openFolder(String filePath) {
@@ -57,15 +86,23 @@ public class Generator {
             System.err.println("Error opening file: " + e.getMessage());
         }
     }
-    
-   
 
-    public void generateDocument(Map<String, String> placeholders, List<String> specificationsContent) throws Exception {
+    public void generateDocument(Map<String, String> placeholders) throws Exception {
         LocalDateTime date1 = LocalDateTime.now();
         DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd, HH;mm;ss");
         String formattedDateTime = date1.format(formatter1);
 
-        InputStream templatePath = getClass().getResourceAsStream("/templates/templateDoc.docx");
+        // Selección de la plantilla en función del tipo de documento
+        InputStream templatePath;
+        if (null == tipoDocumento) {
+            throw new IllegalArgumentException("Tipo de documento no soportado: " + tipoDocumento);
+        } else {
+            switch (tipoDocumento) {
+                case "Despacho" -> templatePath = getClass().getResourceAsStream("/templates/plantilla_despacho.docx");
+                case "Recepción" -> templatePath = getClass().getResourceAsStream("/templates/plantilla_recepcion.docx");
+                default -> throw new IllegalArgumentException("Tipo de documento no soportado: " + tipoDocumento);
+            }
+        }
 
         String userHome = System.getProperty("user.home");
         String oneDriveDir = "/Onedrive - Inventory and Distribution Services";
@@ -93,70 +130,16 @@ public class Generator {
         // Reemplazo de placeholders en el documento
         for (XWPFParagraph paragraph : paragraphs) {
             List<XWPFRun> runs = paragraph.getRuns();
-            String paragraphText = paragraph.getText();
-
-            for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-                String placeholder = "{{" + entry.getKey() + "}}";
-                String value = entry.getValue();
-                paragraphText = paragraphText.replace(placeholder, value);
-
-                for (XWPFRun run : runs) {
-                    String runText = run.getText(0);
-                    if (runText != null && runText.contains(placeholder)) {
-                        run.setText(runText.replace(placeholder, value), 0);
-                        run.setBold(true);
+            if (runs.size() > 0) {
+                String text = runs.get(0).getText(0);
+                for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+                    String placeholder = "{{" + entry.getKey() + "}}";
+                    if (text != null && text.contains(placeholder)) {
+                        text = text.replace(placeholder, entry.getValue());
+                        runs.get(0).setText(text, 0);
                     }
                 }
             }
-
-            // Reemplazo de la fecha de creación
-            LocalDate currentDate = LocalDate.now();
-            DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es"));
-            String formattedDate = currentDate.format(formatter2);
-            String capitalizedDay = formattedDate.substring(0, 1).toUpperCase() + formattedDate.substring(1);
-            paragraphText = paragraphText.replace("{{creation_date}}", capitalizedDay);
-
-            // Eliminar runs vacíos de imágenes
-            for (int i = runs.size() - 1; i >= 0; i--) {
-                XWPFRun run = runs.get(i);
-                if (run.getEmbeddedPictures().size() == 0) {
-                    paragraph.removeRun(i);
-                }
-            }
-
-            // Crear el run con el texto modificado
-            XWPFRun run = paragraph.createRun();
-            run.setText(paragraphText);
-        }
-
-        // Reemplazo de especificaciones
-        XWPFParagraph specificationsParagraph = null;
-        for (XWPFParagraph paragraph : paragraphs) {
-            if (paragraph.getText().contains("{{specifications}}")) {
-                specificationsParagraph = paragraph;
-                paragraph.setAlignment(ParagraphAlignment.LEFT);
-                break;
-            }
-        }
-
-        if (specificationsParagraph != null) {
-            List<XWPFRun> runs = specificationsParagraph.getRuns();
-            for (int i = runs.size() - 1; i >= 0; i--) {
-                XWPFRun run = runs.get(i);
-
-                if (run.getText(0).contains("{{specifications}}")) {
-                    specificationsParagraph.removeRun(i);
-                }
-            }
-
-            for (String specLine : specificationsContent) {
-                XWPFRun specRun = specificationsParagraph.createRun();
-                String[] specParts = specLine.split(":");
-                specRun.setText(specParts[0] + ": " + specParts[1]);
-                specRun.addCarriageReturn();
-            }
-        } else {
-            System.out.println("Placeholder not found");
         }
 
         // Guardar el documento de Word
@@ -171,51 +154,20 @@ public class Generator {
     }
 
     public void saveAsPdf(String wordFilePath, String pdfFilePath) throws IOException {
-        // Obtener el directorio base donde se ejecuta la aplicación
-        String appDir = System.getProperty("user.dir");
-        String libreOfficePath;
-
-        // Determinar el sistema operativo (Windows o macOS)
+        // Determinar el sistema operativo y establecer la ruta de LibreOffice correspondiente
         String os = System.getProperty("os.name").toLowerCase();
+        String libreOfficePath = "/path/to/libreoffice"; // Modificar según la configuración de tu entorno
 
         if (os.contains("win")) {
-            // En Windows, asumimos que LibreOfficePortable.exe está en resources/libreoffice
-            libreOfficePath = appDir + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "libreoffice" + File.separator + "LibreOfficePortable.exe";
+            libreOfficePath = "C:\\Program Files\\LibreOffice\\program\\soffice.exe";
         } else if (os.contains("mac")) {
-            // En macOS, el archivo soffice debe estar en resources/libreoffice/MacOS
-            libreOfficePath = appDir + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "libreoffice" + File.separator + "MacOS" + File.separator + "soffice";
-        } else {
-            throw new UnsupportedOperationException("Sistema operativo no soportado: " + os);
+            libreOfficePath = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
         }
 
-        // Verificar si el archivo de LibreOffice existe
-        File libreOffice = new File(libreOfficePath);
-        if (!libreOffice.exists()) {
-            throw new IOException("LibreOffice no encontrado en: " + libreOfficePath);
-        }
-
-        // Comando para convertir el archivo a PDF
-        String[] command = {
-            libreOfficePath,
-            "--headless",
-            "--convert-to", "pdf:writer_pdf_Export",
-            "--outdir", new File(pdfFilePath).getParent(),
-            wordFilePath
-        };
+        // Comando para convertir el documento Word a PDF
+        String command = libreOfficePath + " --headless --convert-to pdf --outdir " + new File(pdfFilePath).getParent() + " " + wordFilePath;
 
         // Ejecutar el comando
-        Process process = new ProcessBuilder(command).start();
-
-        try {
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                System.out.println("Conversión exitosa a PDF.");
-            } else {
-                System.err.println("Error en la conversión. Código de salida: " + exitCode);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Restaurar estado de interrupción
-            System.err.println("Error esperando la finalización del proceso: " + e.getMessage());
-        }
+        Runtime.getRuntime().exec(command);
     }
 }
