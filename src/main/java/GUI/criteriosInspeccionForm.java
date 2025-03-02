@@ -4,6 +4,7 @@
  */
 package GUI;
 
+import Entities.User.userEntity;
 import documentData.AQL_Inspector;
 import documentData.criteriosInspeccion;
 import documentData.dataDocumento;
@@ -34,12 +35,14 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
     private criteriosInspeccion criteriosInspeccion;
     private resultadosInspeccion resultadosInspeccion;
     private JTextField[] fields;
+    private userEntity user;
 
-    public criteriosInspeccionForm(dataDocumento documento, criteriosInspeccion criteriosInspeccion, resultadosInspeccion resultadosInspeccion) {
+    public criteriosInspeccionForm(dataDocumento documento, criteriosInspeccion criteriosInspeccion, resultadosInspeccion resultadosInspeccion, userEntity user) {
         initComponents();
         centerWindowOnScreen();
 
         btnVaciarCampos.setVisible(false);
+        this.user = user;
 
         this.documento = documento;
         this.criteriosInspeccion = criteriosInspeccion;
@@ -60,7 +63,7 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
         // Inicializa el array de JTextField
         fields = new JTextField[]{
             txtCantidadAMuestrear, txtCantidadAceptacion, txtCantidadRechazo, txtCantidadUnidadesLote,
-             txtNivelInspección
+            txtNivelInspección
         };
 
         agregarListenersATextFields(fields);
@@ -268,6 +271,11 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
         btnVaciarCampos.setText("Vaciar Campos");
         btnVaciarCampos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnVaciarCampos.setEnabled(false);
+        btnVaciarCampos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVaciarCamposActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnVaciarCampos, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 590, 220, 60));
 
         jLabel3.setFont(new java.awt.Font("Open Sans", 0, 50)); // NOI18N
@@ -431,7 +439,7 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
 
         criteriosInspeccion = new criteriosInspeccion(nivelInspeccion, cantidadUnidadesAMuestrear, cantidadRechazo, cantidadAceptación);
 
-        cantidadErroresForm cantidadErroresForm = new cantidadErroresForm(documento, criteriosInspeccion, resultadosInspeccion);
+        cantidadErroresForm cantidadErroresForm = new cantidadErroresForm(documento, criteriosInspeccion, resultadosInspeccion, user);
         this.dispose();
         cantidadErroresForm.setVisible(true);
 
@@ -500,11 +508,27 @@ public class criteriosInspeccionForm extends javax.swing.JFrame {
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
 
-        dataDocumentoForm dataDocForm = new dataDocumentoForm(tipoDocumento, documento);
+        dataDocumentoForm dataDocForm = new dataDocumentoForm(tipoDocumento, documento, user);
         this.dispose();
         dataDocForm.setVisible(true);
 
     }//GEN-LAST:event_btnVolverActionPerformed
+
+    private void btnVaciarCamposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVaciarCamposActionPerformed
+        int respuesta = JOptionPane.showConfirmDialog(
+                this,
+                "¿Seguro que quieres limpiar todos los campos de texto?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (respuesta == JOptionPane.YES_OPTION) {
+            for (JTextField field : fields) {
+                field.setText("");
+            }
+        }
+    }//GEN-LAST:event_btnVaciarCamposActionPerformed
 
     /**
      * @param args the command line arguments

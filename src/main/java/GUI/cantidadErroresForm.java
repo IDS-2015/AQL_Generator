@@ -4,6 +4,7 @@
  */
 package GUI;
 
+import Entities.User.userEntity;
 import documentData.criteriosInspeccion;
 import documentData.dataDocumento;
 import documentData.resultadosInspeccion;
@@ -11,6 +12,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
@@ -32,41 +34,42 @@ public class cantidadErroresForm extends javax.swing.JFrame {
     private int cantidadErrores, cantidadUnidadesLote, cantidadRechazo;
     private String resultadoDocumento;
     private JTextField[] fields;
-    
-    public cantidadErroresForm(dataDocumento documento, criteriosInspeccion criteriosInspeccion, resultadosInspeccion resultadosInspeccion) {
+    private userEntity user;
+
+    public cantidadErroresForm(dataDocumento documento, criteriosInspeccion criteriosInspeccion, resultadosInspeccion resultadosInspeccion, userEntity user) {
         initComponents();
         centerWindowOnScreen();
-        
+
         this.documento = documento;
         this.criteriosInspeccion = criteriosInspeccion;
         this.resultadosInspeccion = resultadosInspeccion;
-        
+        this.user = user;
+
         cantidadRechazo = criteriosInspeccion.getCantidadRechazo();
-        
+
         cantidadUnidadesLote = documento.getCantidadUnidades();
         txtCantidadUnidadesLote.setText(String.valueOf(cantidadUnidadesLote));
         txtCantidadUnidadesLote.setEditable(false);
-        
+
         txtCantidadErrores.setText(String.valueOf(resultadosInspeccion.getNumeroDefectos()));
-        
-        
+
         txtCantidadErrores.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 actualizarPorcentajeErrores();
             }
-            
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 actualizarPorcentajeErrores();
             }
-            
+
             @Override
             public void changedUpdate(DocumentEvent e) {
                 actualizarPorcentajeErrores();
             }
         });
-        
+
         txtCantidadErrores.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 char caracter = e.getKeyChar();
@@ -76,19 +79,19 @@ public class cantidadErroresForm extends javax.swing.JFrame {
                 }
             }
         });
-        
+
         txtPorcentajeErrores.setEditable(false);
 
         // Inicializa el array de JTextField
         fields = new JTextField[]{
             txtCantidadErrores
         };
-        
+
         agregarListenersATextFields(fields);
         actualizarBotones();
-        
+
     }
-    
+
     public cantidadErroresForm() {
     }
 
@@ -100,12 +103,12 @@ public class cantidadErroresForm extends javax.swing.JFrame {
                 public void insertUpdate(DocumentEvent e) {
                     actualizarBotones();
                 }
-                
+
                 @Override
                 public void removeUpdate(DocumentEvent e) {
                     actualizarBotones();
                 }
-                
+
                 @Override
                 public void changedUpdate(DocumentEvent e) {
                     actualizarBotones();
@@ -143,7 +146,7 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         int centerY = (int) (screenRect.getHeight() - windowHeight) / 2;
         setLocation(centerX, centerY);
     }
-    
+
     private void calcularPorcentajeError(int cantidadErrores, int cantidadUnidadesLote) {
         if (cantidadUnidadesLote > 0) { // Verificar que no se divida por cero
             porcentajeErrores = ((double) cantidadErrores / cantidadUnidadesLote) * 100;
@@ -152,7 +155,7 @@ public class cantidadErroresForm extends javax.swing.JFrame {
             System.out.println("La cantidad de unidades no puede ser cero o negativa.");
         }
     }
-    
+
     private void actualizarPorcentajeErrores() {
         try {
             cantidadErrores = Integer.parseInt(txtCantidadErrores.getText());
@@ -166,17 +169,15 @@ public class cantidadErroresForm extends javax.swing.JFrame {
             txtPorcentajeErrores.setText("0.00%"); // O cualquier valor por defecto que desees
         }
     }
-    
+
     private String calcularResultadoDocumento() {
-        
+
         if (cantidadErrores < cantidadRechazo) {
             return resultadoDocumento = "Aprobado";
         } else {
             return resultadoDocumento = "Rechazado";
         }
-        
-        
-        
+
     }
 
     /**
@@ -372,8 +373,8 @@ public class cantidadErroresForm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPorcentajeErroresActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-        
-        criteriosInspeccionForm criteriosInspeccionForm = new criteriosInspeccionForm(documento, criteriosInspeccion, resultadosInspeccion);
+
+        criteriosInspeccionForm criteriosInspeccionForm = new criteriosInspeccionForm(documento, criteriosInspeccion, resultadosInspeccion, user);
         this.dispose();
         criteriosInspeccionForm.setVisible(true);
 
@@ -382,11 +383,11 @@ public class cantidadErroresForm extends javax.swing.JFrame {
     private void btnSiguienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSiguienteActionPerformed
         calcularResultadoDocumento();
         resultadosInspeccion = new resultadosInspeccion(cantidadErrores, porcentajeErrores, resultadoDocumento, null);
-        
-        resultadoDocumentoForm resultadoDocumentoForm = new resultadoDocumentoForm(documento, criteriosInspeccion, resultadosInspeccion);
+
+        resultadoDocumentoForm resultadoDocumentoForm = new resultadoDocumentoForm(documento, criteriosInspeccion, resultadosInspeccion, user);
         this.dispose();
         resultadoDocumentoForm.setVisible(true);
-        
+
     }//GEN-LAST:event_btnSiguienteActionPerformed
 
     private void txtCantidadUnidadesLoteFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCantidadUnidadesLoteFocusGained
@@ -402,7 +403,19 @@ public class cantidadErroresForm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtCantidadUnidadesLoteActionPerformed
 
     private void btnVaciarCamposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVaciarCamposActionPerformed
-        // TODO add your handling code here:
+        int respuesta = JOptionPane.showConfirmDialog(
+                this,
+                "¿Seguro que quieres limpiar todos los campos de texto?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (respuesta == JOptionPane.YES_OPTION) {
+            for (JTextField field : fields) {
+                field.setText("");
+            }
+        }
     }//GEN-LAST:event_btnVaciarCamposActionPerformed
 
     /**
@@ -418,15 +431,15 @@ public class cantidadErroresForm extends javax.swing.JFrame {
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(cantidadErroresForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            
+
         } catch (InstantiationException ex) {
             java.util.logging.Logger.getLogger(cantidadErroresForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            
+
         } catch (IllegalAccessException ex) {
             java.util.logging.Logger.getLogger(cantidadErroresForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(cantidadErroresForm.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);

@@ -4,6 +4,7 @@
  */
 package GUI;
 
+import Entities.User.userEntity;
 import documentData.criteriosInspeccion;
 import documentData.dataDocumento;
 import documentData.resultadosInspeccion;
@@ -13,6 +14,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
@@ -32,12 +34,14 @@ public class dataDocumentoForm extends javax.swing.JFrame {
     private criteriosInspeccion criteriosInspeccion;
     private resultadosInspeccion resultadosInspeccion;
     private JTextField[] fields;
+    private userEntity user;
 
-    public dataDocumentoForm(String tipoDocumento, dataDocumento documento) {
+    public dataDocumentoForm(String tipoDocumento, dataDocumento documento, userEntity user) {
         initComponents();
         centerWindowOnScreen();
 
         this.tipoDocumento = tipoDocumento;
+        this.user = user;
 
         lblTipoDoc.setText(lblTipoDoc.getText() + " " + tipoDocumento);
 
@@ -262,6 +266,11 @@ public class dataDocumentoForm extends javax.swing.JFrame {
         btnVaciarCampos1.setText("Vaciar Campos");
         btnVaciarCampos1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnVaciarCampos1.setEnabled(false);
+        btnVaciarCampos1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVaciarCampos1ActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnVaciarCampos1, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 590, 220, 60));
 
         lblTipoDoc.setFont(new java.awt.Font("Open Sans", 0, 30)); // NOI18N
@@ -539,7 +548,7 @@ public class dataDocumentoForm extends javax.swing.JFrame {
         }
 
 // Ahora, ambos objetos están garantizados de no ser nulos
-        criteriosInspeccionForm criteriosInspeccionForm = new criteriosInspeccionForm(documento, criteriosInspeccion, resultadosInspeccion);
+        criteriosInspeccionForm criteriosInspeccionForm = new criteriosInspeccionForm(documento, criteriosInspeccion, resultadosInspeccion, user);
         this.dispose();
         criteriosInspeccionForm.setVisible(true);
 
@@ -642,8 +651,38 @@ public class dataDocumentoForm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtFechaEvaluacionActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-        
+        int respuesta = JOptionPane.showConfirmDialog(
+                this,
+                "¿Seguro que quieres volver a seleccionar el tipo de documento? Aviso, se perderá el progreso actual",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (respuesta == JOptionPane.YES_OPTION) {
+            homeForm homeForm = new homeForm(user);
+            this.dispose();
+            homeForm.setVisible(true);
+        }
+
+
     }//GEN-LAST:event_btnVolverActionPerformed
+
+    private void btnVaciarCampos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVaciarCampos1ActionPerformed
+        int respuesta = JOptionPane.showConfirmDialog(
+                this,
+                "¿Seguro que quieres limpiar todos los campos de texto?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (respuesta == JOptionPane.YES_OPTION) {
+            for (JTextField field : fields) {
+                field.setText("");
+            }
+        }
+    }//GEN-LAST:event_btnVaciarCampos1ActionPerformed
 
     /**
      * @param args the command line arguments

@@ -28,7 +28,7 @@ public class userAuthenticationForm extends javax.swing.JFrame {
     private String username;
     private String password;
     userEntity authenticatedUser = new userEntity();
-    
+
     private JTextField[] fields;
 
     userController UserController = new userController();
@@ -41,15 +41,15 @@ public class userAuthenticationForm extends javax.swing.JFrame {
         fields = new JTextField[]{
             txtPassword, txtUsername
         };
-        
+
         agregarListenersATextFields(fields);
-       
+
     }
 
     private void initCustomComponents() {
 
     }
-    
+
     // Método para añadir listeners a los campos de texto
     private void agregarListenersATextFields(JTextField[] fields) {
         for (JTextField field : fields) {
@@ -95,7 +95,6 @@ public class userAuthenticationForm extends javax.swing.JFrame {
         username = txtUsername.getText();
         password = txtPassword.getText();
 
-        
         authenticatedUser = UserController.validateUser(username, password);
 
         if (authenticatedUser != null) {
@@ -260,15 +259,15 @@ public class userAuthenticationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtUsernameFocusGained
 
     private void txtUsernameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtUsernameFocusLost
-      
+
     }//GEN-LAST:event_txtUsernameFocusLost
 
     private void txtPasswordFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPasswordFocusGained
-        
+
     }//GEN-LAST:event_txtPasswordFocusGained
 
     private void txtPasswordFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPasswordFocusLost
-        
+
     }//GEN-LAST:event_txtPasswordFocusLost
 
     private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
@@ -276,12 +275,24 @@ public class userAuthenticationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPasswordActionPerformed
 
     private void btnIniciarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarSesionActionPerformed
-        
-       authenticateUser();
+
+        authenticateUser();
     }//GEN-LAST:event_btnIniciarSesionActionPerformed
 
     private void btnVaciarCamposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVaciarCamposActionPerformed
-        // TODO add your handling code here:
+        int respuesta = JOptionPane.showConfirmDialog(
+                this,
+                "¿Seguro que quieres limpiar todos los campos de texto?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (respuesta == JOptionPane.YES_OPTION) {
+            for (JTextField field : fields) {
+                field.setText("");
+            }
+        }
     }//GEN-LAST:event_btnVaciarCamposActionPerformed
 
     /**

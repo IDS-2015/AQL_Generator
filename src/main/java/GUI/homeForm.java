@@ -170,7 +170,7 @@ public class homeForm extends javax.swing.JFrame {
     private void btnDocRecepcionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDocRecepcionActionPerformed
         String tipoDocumento = "Recepción";
         dataDocumento documento = new dataDocumento();
-        dataDocumentoForm dataDocumentoForm = new dataDocumentoForm(tipoDocumento, null);
+        dataDocumentoForm dataDocumentoForm = new dataDocumentoForm(tipoDocumento, null,user);
         this.dispose();
         dataDocumentoForm.setVisible(true);
         
@@ -182,7 +182,7 @@ public class homeForm extends javax.swing.JFrame {
         
         String tipoDocumento = "Despacho";
         //dataDocumento documento = new dataDocumento();
-        dataDocumentoForm dataDocumentoForm = new dataDocumentoForm(tipoDocumento, null);
+        dataDocumentoForm dataDocumentoForm = new dataDocumentoForm(tipoDocumento, null, user);
         this.dispose();
         dataDocumentoForm.setVisible(true);
         

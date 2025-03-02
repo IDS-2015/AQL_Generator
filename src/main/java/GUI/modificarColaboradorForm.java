@@ -312,6 +312,7 @@ public class modificarColaboradorForm extends javax.swing.JFrame {
         } catch (NullPointerException e) {
             JOptionPane.showMessageDialog(null, "Error: Uno de los elementos no está inicializado correctamente.", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
+            
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Ocurrió un error inesperado al actualizar el usuario.", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
