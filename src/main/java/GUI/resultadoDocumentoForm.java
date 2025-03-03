@@ -7,6 +7,7 @@ package GUI;
 import Controller.collaboratorController;
 import Entities.Collaborator.collaboratorEntity;
 import Entities.User.userEntity;
+import Generator.Generator;
 import documentData.criteriosInspeccion;
 import documentData.dataDocumento;
 import documentData.resultadosInspeccion;
@@ -14,7 +15,10 @@ import java.awt.Color;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 /**
@@ -29,7 +33,7 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
     private dataDocumento documento;
     private criteriosInspeccion criteriosInspeccion;
     private resultadosInspeccion resultadosInspeccion;
-    private String resultadoInspeccion, observacionesFinales, elaboradoPor;
+    private String resultadoInspeccion, observacionesFinales, elaboradoPor, tipoDocumento;
     private int cantidadErrores;
     private Double porcentajeDefectos;
     private collaboratorController collaboratorContoller;
@@ -44,6 +48,8 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
         this.criteriosInspeccion = criteriosInspeccion;
         this.resultadosInspeccion = resultadosInspeccion;
 
+        tipoDocumento = documento.getTipoDocumento();
+
         cantidadErrores = resultadosInspeccion.getNumeroDefectos();
         porcentajeDefectos = resultadosInspeccion.getPorcentajeDefectos();
 
@@ -54,12 +60,10 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
             collaboratorContoller = new collaboratorController();
             populateCollaboratorComboBox(cmbPorcenajeInspeccion);
          */
-        
-        
         //Invisible elements for now, this is to not delete all the functionality already given
         lblElaboradoPor.setVisible(false);
         cmbCollaboratorsList.setVisible(false);
-        
+
         // Cambia el color del JLabel según el resultado
         if ("Aprobado".equalsIgnoreCase(resultadoInspeccion)) {
             lblResultado.setForeground(new Color(93, 186, 71)); // Color verde para aprobado
@@ -208,7 +212,6 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGenerarDocumentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarDocumentoActionPerformed
-
         observacionesFinales = txtAreaObservaciones.getText();
         elaboradoPor = cmbCollaboratorsList.getSelectedItem().toString();
 
@@ -242,7 +245,17 @@ public class resultadoDocumentoForm extends javax.swing.JFrame {
 
         System.out.println("_____________________________\n");
 
-
+        Generator generator = new Generator(criteriosInspeccion, documento, resultadosInspeccion, tipoDocumento);
+        try {
+            generator.generateDocument();
+            JOptionPane.showMessageDialog(null, "Documento generado exitosamente!", "Generación Exitosa", JOptionPane.INFORMATION_MESSAGE);
+            homeForm homeForm = new homeForm(user);
+            this.dispose();
+            homeForm.setVisible(true);
+        } catch (Exception ex) {
+            Logger.getLogger(resultadoDocumentoForm.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Error al generar el documento: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnGenerarDocumentoActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
